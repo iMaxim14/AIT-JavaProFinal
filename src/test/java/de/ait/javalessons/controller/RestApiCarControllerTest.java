@@ -1,8 +1,11 @@
 package de.ait.javalessons.controller;
 
 import de.ait.javalessons.model.Car;
+import de.ait.javalessons.repositories.CarRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
@@ -13,13 +16,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest
 public class RestApiCarControllerTest {
 
     private RestApiCarController restApiCarController;
 
+
+    @Autowired
+    private CarRepository carRepository;
+
+
     @BeforeEach
-    public void setUp(){
-        restApiCarController = new RestApiCarController();
+    void setUp() {
+        //TODO
+        restApiCarController = new RestApiCarController(carRepository);
     }
 
     @Test
@@ -28,7 +38,7 @@ public class RestApiCarControllerTest {
         List<Car> resultCars = new ArrayList<>();
         resultCarsIterable.forEach(resultCars::add);
 
-        assertEquals(4, resultCars.size());
+        assertEquals(5, resultCars.size());
         assertEquals("BMW M1", resultCars.get(0).getName());
     }
 
@@ -60,32 +70,33 @@ public class RestApiCarControllerTest {
 
     @Test
     void testPutCarUpdateCarInfo(){
-        Car carToUpdate = new Car("1", "Tesla Model 1");
-        ResponseEntity<Car> responseEntityResult = restApiCarController.putCar("1", carToUpdate);
-        assertEquals(200, responseEntityResult.getStatusCodeValue());
+        Car carToAdd = new Car("1", "Tesla Model 1");
+        ResponseEntity<Car> responseEntityResult = restApiCarController.putCar("1", carToAdd);
+        assertEquals(200, responseEntityResult.getStatusCode().value());
         assertEquals("Tesla Model 1", responseEntityResult.getBody().getName());
     }
 
     @Test
-    void testPutCarCreateNewCarInfo(){
-        Car carToUpdate = new Car("10", "Tesla Model 1");
-        ResponseEntity<Car> responseEntityResult = restApiCarController.putCar("10", carToUpdate);
-        assertEquals(201, responseEntityResult.getStatusCodeValue());
+    void testPutCarCreateNewCar(){
+        Car carToAdd = new Car("10", "Tesla Model 1");
+        ResponseEntity<Car> responseEntityResult = restApiCarController.putCar("10", carToAdd);
+        assertEquals(201, responseEntityResult.getStatusCode().value());
         assertEquals("Tesla Model 1", responseEntityResult.getBody().getName());
     }
 
     @Test
-    void testDeleteCar(){
+    void testDeleteCarSuccess(){
         Iterable<Car> resultCarsIterable = restApiCarController.getCars();
         List<Car> resultCars = new ArrayList<>();
         resultCarsIterable.forEach(resultCars::add);
-        assertEquals(4, resultCars.size());
+        assertEquals(5, resultCars.size());
         restApiCarController.deleteCar("1");
-
-        //Создаем новую коллекцию, иначе resultCars.size() суммируется
         Iterable<Car> resultCarsIterableDeletedCar = restApiCarController.getCars();
-        resultCars = new ArrayList<>();
+        resultCars =  new ArrayList<>();
         resultCarsIterableDeletedCar.forEach(resultCars::add);
-        assertEquals(3, resultCars.size());
+        assertEquals(4, resultCars.size());
     }
+
+
+
 }

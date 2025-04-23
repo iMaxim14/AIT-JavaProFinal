@@ -10,5 +10,4 @@ public class DevelopmentGr42MiApplication {
 
         SpringApplication.run(DevelopmentGr42MiApplication.class, args);
     }
-
 }
